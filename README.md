@@ -6,7 +6,7 @@ This project is structured specifically to serve as a deep-dive discussion piece
 
 ---
 
-## 🌟 System Architecture
+## System Architecture
 
 ```
 [ Client / Dashboard UI ] --(1) Send Request--> [ Redis Sliding-Window Limiter ]
@@ -31,7 +31,7 @@ Uses Go's `M:N` scheduler (goroutines) to handle thousands of concurrent request
 
 ---
 
-## 🚀 Key Engineering Problems Solved
+## Key Engineering Problems Solved
 
 ### A. Atomicity & Race Conditions in Rate Limiting
 * **The Problem:** Performing checking and writing operations sequentially across separate Redis commands introduces race conditions (Time-of-Check to Time-of-Use).
@@ -43,7 +43,7 @@ Uses Go's `M:N` scheduler (goroutines) to handle thousands of concurrent request
 
 ---
 
-## 🛠️ Technology Stack
+## Technology Stack
 * **Language:** Go (Golang) - high-performance concurrent runtime.
 * **Cache:** Redis - in-memory data store for sub-millisecond throttling.
 * **Database:** PostgreSQL - ACID-compliant database for transaction safety.
@@ -52,7 +52,7 @@ Uses Go's `M:N` scheduler (goroutines) to handle thousands of concurrent request
 
 ---
 
-## 🎓 SDE Interview Talking Points (Google Level)
+## SDE Interview Talking Points (Google Level)
 
 When discussing this project in system design or team-matching interviews, you can showcase depth in these areas:
 
@@ -62,7 +62,7 @@ When discussing this project in system design or team-matching interviews, you c
 
 ---
 
-## 💻 Running the Sandbox locally
+## Running the Sandbox locally
 
 ### 1. Launch Services
 Start the Go application, Redis, and PostgreSQL database:
