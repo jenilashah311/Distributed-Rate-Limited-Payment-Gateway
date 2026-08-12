@@ -1,0 +1,14 @@
+# Binaries
+main
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Cache & Temp Files
+.DS_Store
+__pycache__/
+*.pyc
+
+# Docker state
+data/

@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Gateway - Developer Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #090615 0%, #120b29 50%, #05030a 100%);
+            --panel-bg: rgba(25, 18, 52, 0.4);
+            --panel-border: rgba(147, 51, 234, 0.2);
+            --glow-color: rgba(168, 85, 247, 0.4);
+            --text-primary: #f3e8ff;
+            --text-secondary: #c084fc;
+            --text-muted: #7c3aed;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --accent-purple: #a855f7;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            padding: 2rem;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--panel-border);
+            padding-bottom: 1.5rem;
+        }
+
+        .logo-section h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #f3e8ff, #a855f7, #6366f1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-section p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 0.2rem;
+        }
+
+        .badge-container {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .tech-badge {
+            background: rgba(168, 85, 247, 0.1);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            color: #d8b4fe;
+            padding: 0.3rem 0.8rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 2rem;
+            flex: 1;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            backdrop-filter: blur(12px);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .card h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            border-left: 3px solid var(--accent-purple);
+            padding-left: 0.75rem;
+            color: #f3e8ff;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input, select {
+            background: rgba(10, 8, 20, 0.6);
+            border: 1px solid var(--panel-border);
+            color: #fff;
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-purple);
+            box-shadow: 0 0 10px var(--glow-color);
+        }
+
+        .idempotency-input-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .idempotency-input-group input {
+            flex: 1;
+        }
+
+        .btn-small {
+            background: rgba(168, 85, 247, 0.2);
+            border: 1px solid var(--accent-purple);
+            color: #fff;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .btn-small:hover {
+            background: var(--accent-purple);
+            box-shadow: 0 0 15px var(--glow-color);
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(168, 85, 247, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(168, 85, 247, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--accent-purple);
+            color: #f3e8ff;
+        }
+
+        .btn-outline:hover {
+            background: rgba(168, 85, 247, 0.15);
+            box-shadow: 0 0 15px var(--glow-color);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.2);
+        }
+
+        .btn-danger:hover {
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
+        }
+
+        /* Right column: console logs & history */
+        .terminal-card {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .terminal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .terminal-body {
+            background: rgba(10, 8, 22, 0.85);
+            border: 1px solid var(--panel-border);
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            padding: 1rem;
+            flex: 1;
+            overflow-y: auto;
+            max-height: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            font-size: 0.85rem;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.8);
+        }
+
+        .log-entry {
+            border-left: 2px solid var(--text-muted);
+            padding-left: 0.5rem;
+            line-height: 1.4;
+        }
+
+        .log-entry.miss {
+            border-color: var(--accent-purple);
+        }
+
+        .log-entry.hit {
+            border-color: var(--accent-green);
+        }
+
+        .log-entry.error {
+            border-color: var(--accent-red);
+        }
+
+        .log-timestamp {
+            color: #6b7280;
+        }
+
+        .log-success {
+            color: var(--accent-green);
+        }
+
+        .log-fail {
+            color: var(--accent-red);
+        }
+
+        .log-hit {
+            color: var(--accent-green);
+            background: rgba(16, 185, 129, 0.1);
+            padding: 0 4px;
+            border-radius: 3px;
+        }
+
+        .log-miss {
+            color: var(--text-secondary);
+            background: rgba(192, 132, 252, 0.1);
+            padding: 0 4px;
+            border-radius: 3px;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .stat-box {
+            background: rgba(10, 8, 20, 0.4);
+            border: 1px solid var(--panel-border);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .stat-val {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-purple);
+            margin-top: 0.3rem;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo-section">
+            <h1>Payment Service Sandbox</h1>
+            <p>Interactive Pipeline Test Console</p>
+        </div>
+        <div class="badge-container">
+            <span class="tech-badge">Go Microservice</span>
+            <span class="tech-badge">Redis Limiter</span>
+            <span class="tech-badge">Postgres Idempotency</span>
+        </div>
+    </header>
+
+    <div class="dashboard-grid">
+        <div class="card">
+            <h2>Payment Payload Options</h2>
+            
+            <div class="form-group">
+                <label>Amount (USD)</label>
+                <input type="number" id="pay-amount" value="150.00" step="0.01">
+            </div>
+
+            <div class="form-group">
+                <label>Client ID (For Redis Throttling)</label>
+                <input type="text" id="client-id" value="client-dashboard-user">
+            </div>
+
+            <div class="form-group">
+                <label>Idempotency Key (UUID)</label>
+                <div class="idempotency-input-group">
+                    <input type="text" id="idempotency-key" readonly>
+                    <button class="btn-small" onclick="generateNewKey()">Gen Key</button>
+                </div>
+            </div>
+
+            <h2>Run Test Scenarios</h2>
+            <div class="button-group">
+                <button class="btn" onclick="sendSinglePayment()">Process Single</button>
+                <button class="btn btn-outline" onclick="sendDuplicateClick()">Double Click</button>
+                <button class="btn btn-outline" onclick="sendConcurrentRace()">Concurrent Race</button>
+                <button class="btn btn-danger" onclick="triggerRateLimitSpam()">Spam 15 reqs (Rate Limit)</button>
+            </div>
+        </div>
+
+        <div class="card terminal-card">
+            <div class="terminal-header">
+                <h2>Real-Time Logs & Stats</h2>
+                <button class="btn-small" style="padding: 0.3rem 0.6rem; font-size: 0.75rem;" onclick="clearLogs()">Clear Console</button>
+            </div>
+
+            <div class="stats-row">
+                <div class="stat-box">
+                    <div class="stat-label">Cache Hits</div>
+                    <div class="stat-val" id="count-hit">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Cache Misses</div>
+                    <div class="stat-val" id="count-miss">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Throttled (429)</div>
+                    <div class="stat-val" id="count-limit">0</div>
+                </div>
+            </div>
+
+            <div class="terminal-body" id="log-console">
+                <div style="color: #6b7280;">Sandbox initialized. Select a test scenario to begin.</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const host = window.location.origin;
+
+        // Initialize state counters
+        let hits = 0;
+        let misses = 0;
+        let limits = 0;
+
+        function generateNewKey() {
+            const uuidVal = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+            document.getElementById('idempotency-key').value = uuidVal;
+            return uuidVal;
+        }
+
+        // Set initial key
+        generateNewKey();
+
+        function addLog(text, type = '') {
+            const consoleEl = document.getElementById('log-console');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            const now = new Date().toLocaleTimeString();
+            entry.innerHTML = `<span class="log-timestamp">[${now}]</span> ${text}`;
+            consoleEl.appendChild(entry);
+            consoleEl.scrollTop = consoleEl.scrollHeight;
+        }
+
+        function clearLogs() {
+            document.getElementById('log-console').innerHTML = '';
+            hits = 0;
+            misses = 0;
+            limits = 0;
+            updateStats();
+        }
+
+        function updateStats() {
+            document.getElementById('count-hit').innerText = hits;
+            document.getElementById('count-miss').innerText = misses;
+            document.getElementById('count-limit').innerText = limits;
+        }
+
+        async function makePaymentRequest(key, clientId, amount) {
+            const startTime = performance.now();
+            try {
+                const response = await fetch(`${host}/payments`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Idempotency-Key': key,
+                        'X-Client-Id': clientId
+                    },
+                    body: JSON.stringify({ amount: parseFloat(amount), currency: 'USD' })
+                });
+                
+                const duration = Math.round(performance.now() - startTime);
+                const cacheHeader = response.headers.get('X-Cache') || 'NONE';
+                
+                if (response.status === 200) {
+                    const data = await response.json();
+                    if (cacheHeader === 'HIT') {
+                        hits++;
+                        addLog(`<span class="log-success">SUCCESS (200)</span> in ${duration}ms | Key: ...${key.slice(-8)} | <span class="log-hit">Idempotency HIT</span> | Tx: ${data.transaction_id}`, 'hit');
+                    } else {
+                        misses++;
+                        addLog(`<span class="log-success">SUCCESS (200)</span> in ${duration}ms | Key: ...${key.slice(-8)} | <span class="log-miss">Idempotency MISS</span> | Tx: ${data.transaction_id}`, 'miss');
+                    }
+                } else if (response.status === 429) {
+                    limits++;
+                    const data = await response.json();
+                    addLog(`<span class="log-fail">LIMIT (429)</span> in ${duration}ms | Key: ...${key.slice(-8)} | <span class="log-fail">Rate Limit Exceeded</span>`, 'error');
+                } else {
+                    addLog(`<span class="log-fail">ERROR (${response.status})</span> in ${duration}ms`, 'error');
+                }
+            } catch (err) {
+                addLog(`<span class="log-fail">CATASTROPHIC NETWORK FAILURE</span>: ${err.message}`, 'error');
+            }
+            updateStats();
+        }
+
+        async function sendSinglePayment() {
+            const key = document.getElementById('idempotency-key').value;
+            const clientId = document.getElementById('client-id').value;
+            const amount = document.getElementById('pay-amount').value;
+            
+            addLog(`Initiating single payment request...`);
+            await makePaymentRequest(key, clientId, amount);
+        }
+
+        async function sendDuplicateClick() {
+            const key = document.getElementById('idempotency-key').value;
+            const clientId = document.getElementById('client-id').value;
+            const amount = document.getElementById('pay-amount').value;
+            
+            addLog(`Simulating client double-click (2 requests sequentially)...`);
+            await makePaymentRequest(key, clientId, amount);
+            await makePaymentRequest(key, clientId, amount);
+        }
+
+        async function sendConcurrentRace() {
+            const key = generateNewKey(); // Generate fresh key to capture the race clean
+            const clientId = document.getElementById('client-id').value;
+            const amount = document.getElementById('pay-amount').value;
+            
+            addLog(`Simulating race condition: firing 5 concurrent requests with Idempotency-Key ...${key.slice(-8)}`);
+            
+            const promises = [];
+            for (let i = 0; i < 5; i++) {
+                promises.push(makePaymentRequest(key, clientId, amount));
+            }
+            await Promise.all(promises);
+        }
+
+        async function triggerRateLimitSpam() {
+            // Generate a fresh client ID so we don't mix with previous counts
+            const rateClientId = 'spammer-' + Math.random().toString(36).substring(7);
+            const amount = document.getElementById('pay-amount').value;
+            
+            addLog(`Starting rate limit test: spamming 15 requests in rapid succession under ClientID: ${rateClientId}`);
+            
+            for (let i = 0; i < 15; i++) {
+                const uniqueKey = generateNewKey();
+                // Send immediately (don't wait)
+                makePaymentRequest(uniqueKey, rateClientId, amount);
+                // Tiny sleep to keep sequential logs readable
+                await new Promise(r => setTimeout(r, 50));
+            }
+        }
+    </script>
+</body>
+</html>
