@@ -1,8 +1,8 @@
-# Resilient Distributed Payment Gateway (SDE Interview Sandbox)
+# Resilient Distributed Payment Gateway
 
 A high-performance payment gateway prototype built in Go, designed to solve critical distributed systems challenges: **exactly-once execution (idempotency)** and **traffic throttling (rate limiting)** under concurrent load. 
 
-This project is structured specifically to serve as a deep-dive discussion piece for **SDE system design and team-matching interviews at companies like Google**.
+This project showcases robust concurrency patterns, optimistic database locking, and in-memory traffic management for cloud-native APIs.
 
 ---
 
@@ -52,13 +52,11 @@ Uses Go's `M:N` scheduler (goroutines) to handle thousands of concurrent request
 
 ---
 
-## SDE Interview Talking Points (Google Level)
+## Design Decisions & Production Scaling
 
-When discussing this project in system design or team-matching interviews, you can showcase depth in these areas:
-
-* **Distributed Lock vs. Optimistic Concurrency:** Explain why using database constraints is more scalable than holding a distributed lock (e.g. Redlock), which incurs network roundtrips and complex lease-time edge cases.
-* **Redis Memory Consumption & TTLs:** Explain how in production you would implement table partitioning or automatic background pruning (e.g., keeping idempotency keys active for only 24 hours) to keep index lookups fast.
-* **Graceful Failure Modes:** What happens if the payment goes through, but the database write fails? (Discuss transition states: writing the key with a `STARTED` state, updating to `SUCCESS` after the charge, and using a reconciliation queue for mismatches).
+* **Optimistic Concurrency Control:** By leveraging database unique constraints rather than application-level distributed locks (e.g. Redlock), the system avoids lock-acquisition overhead and lease-expiration complexities, significantly reducing lock contention.
+* **Data Retention & Pruning:** In a production environment, idempotency keys should have a defined time-to-live (TTL, e.g., 24 hours). This is managed using database table partitioning or background cleanup workers to keep indexes performant.
+* **Resilient Transaction Flow:** For a production deployment, payment operations should transition through explicit states (`STARTED` -> `COMPLETED`/`FAILED`). If a crash occurs mid-payment, a background reconciliation runner can safely recover transaction statuses.
 
 ---
 
